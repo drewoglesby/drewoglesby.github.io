@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Drew Oglesby</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink: #0d0d0d;
+      --paper: #f5f0e8;
+      --accent: #b5481a;
+      --muted: #8a8070;
+      --rule: rgba(13,13,13,0.12);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Jost', sans-serif;
+      overflow: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, opacity 0.2s;
+      mix-blend-mode: multiply;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease;
+      opacity: 0.5;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.6;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 1fr 2px 1fr;
+      grid-template-rows: 1fr;
+      height: 100vh;
+      position: relative;
+    }
+
+    /* Vertical rule */
+    .divider {
+      background: var(--rule);
+      position: relative;
+    }
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* Left panel */
+    .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10vh 8vw 10vh 10vw;
+      opacity: 0;
+      transform: translateX(-30px);
+      animation: fadeInLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    }
+
+    .name-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      font-size: clamp(0.6rem, 0.8vw, 0.75rem);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(3.5rem, 6.5vw, 7.5rem);
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+    }
+
+    .name .first {
+      display: block;
+      color: var(--ink);
+    }
+
+    .name .last {
+      display: block;
+      color: var(--ink);
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .accent-bar {
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+      margin-top: 3rem;
+      transform-origin: left;
+      transform: scaleX(0);
+      animation: barGrow 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+    }
+
+    /* Right panel */
+    .right {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 10vh 10vw 10vh 8vw;
+      opacity: 0;
+      transform: translateX(30px);
+      animation: fadeInRight 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+    }
+
+    .role-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      font-size: clamp(0.6rem, 0.8vw, 0.75rem);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .role {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 3.5vw, 4.2rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .role .word {
+      display: block;
+    }
+
+    .role .word.accent-word {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    /* Corner annotations */
+    .corner {
+      position: fixed;
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeIn 1s ease 1.5s forwards;
+    }
+    .corner-tl { top: 3vh; left: 4vw; }
+    .corner-tr { top: 3vh; right: 4vw; text-align: right; }
+    .corner-bl { bottom: 3vh; left: 4vw; }
+    .corner-br { bottom: 3vh; right: 4vw; text-align: right; }
+
+    /* Horizontal rule across full width at bottom-ish */
+    .h-rule {
+      position: fixed;
+      bottom: 12vh;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--rule);
+      opacity: 0;
+      animation: fadeIn 1s ease 1.8s forwards;
+    }
+
+    /* Floating year marker */
+    .year {
+      position: fixed;
+      bottom: 13vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      opacity: 0;
+      animation: fadeIn 1s ease 2s forwards;
+      background: var(--paper);
+      padding: 0 1rem;
+    }
+
+    @keyframes fadeInLeft {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes barGrow {
+      to { transform: scaleX(1); }
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      html, body { overflow: auto; }
+      .page {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 2px auto;
+        min-height: 100vh;
+        height: auto;
+      }
+      .divider { height: 2px; width: 100%; }
+      .divider::after { top: 50%; left: 50%; }
+      .left {
+        justify-content: flex-end;
+        padding: 14vw 10vw 8vw;
+      }
+      .right {
+        justify-content: flex-start;
+        padding: 8vw 10vw 14vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <div class="corner corner-tl">Portfolio</div>
+  <div class="corner corner-tr">drewoglesby.com</div>
+  <div class="corner corner-bl">Available for work</div>
+  <div class="corner corner-br">www.drewoglesby.com</div>
+
+  <div class="h-rule"></div>
+  <div class="year">MMXXVI</div>
+
+  <div class="page">
+    <div class="left">
+      <div class="name-label">Name</div>
+      <h1 class="name">
+        <span class="first">Drew</span>
+        <span class="last">Oglesby</span>
+      </h1>
+      <div class="accent-bar"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="right">
+      <div class="role-label">Role</div>
+      <div class="role">
+        <span class="word">Senior</span>
+        <span class="word">Product</span>
+        <span class="word accent-word">Analyst</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+  </script>
+</body>
+</html>
