@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Glizzy Gambling — Official Sportsbook of the Glizzy Gang</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0f1623;
+      --bg2:        #181f2e;
+      --bg3:        #1e2740;
+      --bg4:        #252e48;
+      --border:     #2a3450;
+      --blue:       #1493ff;
+      --blue-dim:   #0e6bbf;
+      --mustard:    #f5c518;
+      --mustard-dk: #c9a010;
+      --green:      #2ecf72;
+      --txt:        #ffffff;
+      --txt2:       #8a9bc0;
+      --txt3:       #4d5e7a;
+      --slip-w:     300px;
+      --header-h:   60px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--header-h);
+      background: var(--bg2);
+      border-bottom: 2px solid var(--mustard);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-dog { font-size: 26px; }
+    .logo-name {
+      font-size: 20px; font-weight: 900; letter-spacing: -0.5px;
+    }
+    .logo-name em { color: var(--mustard); font-style: normal; }
+    .logo-sub {
+      font-size: 10px; color: var(--txt2); text-transform: uppercase;
+      letter-spacing: 0.8px; margin-top: 1px;
+    }
+
+    .hdr-right { display: flex; align-items: center; gap: 12px; }
+
+    .live-pill {
+      display: flex; align-items: center; gap: 5px;
+      background: #1a0505; border: 1px solid #8b0000;
+      border-radius: 20px; padding: 4px 10px;
+      font-size: 11px; font-weight: 700; color: #ff4444;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .live-dot {
+      width: 6px; height: 6px; background: #ff4444; border-radius: 50%;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+
+    .slip-btn {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--blue); border: none; color: #fff;
+      padding: 8px 14px; border-radius: 7px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .slip-btn:hover { background: var(--blue-dim); }
+    .slip-badge {
+      background: var(--mustard); color: #000;
+      border-radius: 50%; width: 19px; height: 19px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      margin-top: var(--header-h);
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .main {
+      flex: 1;
+      padding: 22px 22px 60px;
+      min-width: 0;
+      transition: margin-right 0.3s ease;
+    }
+    .main.slip-open { margin-right: var(--slip-w); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0a1228 0%, #142244 60%, #0f1a36 100%);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--mustard);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 22px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg-dog {
+      position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+      font-size: 90px; opacity: 0.07; pointer-events: none;
+      user-select: none;
+    }
+    .event-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(245,197,24,0.15); border: 1px solid var(--mustard);
+      color: var(--mustard); border-radius: 20px;
+      padding: 3px 10px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-size: 22px; font-weight: 900; letter-spacing: -0.3px;
+      margin-bottom: 5px;
+    }
+    .hero-meta { color: var(--txt2); font-size: 13px; margin-bottom: 18px; }
+    .hero-meta span { color: var(--txt3); margin: 0 4px; }
+
+    .hero-stats { display: flex; gap: 0; }
+    .hstat {
+      padding: 0 20px 0 0; margin-right: 20px;
+      border-right: 1px solid var(--border);
+    }
+    .hstat:last-child { border-right: none; }
+    .hstat-val {
+      font-size: 22px; font-weight: 900; color: var(--mustard);
+      line-height: 1;
+    }
+    .hstat-lbl {
+      font-size: 10px; color: var(--txt2); text-transform: uppercase;
+      letter-spacing: 0.6px; margin-top: 3px;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex; gap: 6px; margin-bottom: 20px;
+      overflow-x: auto; padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--txt2); padding: 7px 15px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: all 0.15s;
+    }
+    .tab:hover { border-color: var(--blue); color: var(--txt); }
+    .tab.active {
+      background: var(--blue); border-color: var(--blue); color: #fff;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 30px; }
+    .sec-hdr {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sec-icon { font-size: 16px; }
+    .sec-title {
+      font-size: 13px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--txt2);
+    }
+    .sec-badge {
+      margin-left: auto; background: var(--bg4);
+      color: var(--txt3); font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 10px;
+    }
+
+    /* ── BET GRID ── */
+    .bet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 10px;
+    }
+
+    /* ── BET CARD ── */
+    .bet-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 14px 12px;
+      transition: border-color 0.15s;
+    }
+    .bet-card:hover { border-color: #3a4a70; }
+
+    .bc-matchup {
+      font-size: 10px; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px;
+    }
+    .bc-title {
+      font-size: 13px; font-weight: 700; line-height: 1.35;
+      margin-bottom: 3px; color: var(--txt);
+    }
+    .bc-sub {
+      font-size: 11px; color: var(--txt3); margin-bottom: 12px;
+    }
+
+    .bc-opts { display: flex; gap: 7px; }
+
+    .bc-opt {
+      flex: 1; background: var(--bg4); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 9px 6px; text-align: center;
+      cursor: pointer; transition: all 0.15s; user-select: none;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .bc-opt:hover { border-color: var(--blue); background: #1e2e4a; }
+    .bc-opt.sel { background: #102040; border-color: var(--blue); }
+    .bc-opt.sel .bc-opt-odds { color: var(--mustard); }
+    .bc-opt.sel .bc-opt-odds.pos { color: var(--mustard); }
+
+    .bc-opt-lbl {
+      font-size: 10px; color: var(--txt2); font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .bc-opt-odds {
+      font-size: 17px; font-weight: 800; color: var(--txt);
+      line-height: 1;
+    }
+    .bc-opt-odds.pos { color: var(--green); }
+    .bc-opt-odds.extreme { font-size: 12px; }
+
+    /* ── BET SLIP ── */
+    .slip {
+      position: fixed; top: var(--header-h); right: 0; bottom: 0;
+      width: var(--slip-w);
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 90;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .slip.open { transform: translateX(0); }
+
+    .slip-hdr {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .slip-hdr-title { font-size: 14px; font-weight: 800; }
+    .slip-hdr-clear {
+      background: none; border: none; color: var(--blue);
+      font-size: 12px; cursor: pointer; font-weight: 600;
+    }
+    .slip-hdr-clear:hover { text-decoration: underline; }
+
+    .slip-body {
+      flex: 1; overflow-y: auto; padding: 14px;
+    }
+
+    .slip-empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; height: 100%;
+      text-align: center; color: var(--txt3); padding: 20px;
+    }
+    .slip-empty-icon { font-size: 44px; margin-bottom: 12px; opacity: 0.5; }
+    .slip-empty p { font-size: 12px; line-height: 1.5; }
+
+    .slip-item {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 11px 12px; margin-bottom: 8px;
+      position: relative;
+    }
+    .slip-item-rm {
+      position: absolute; top: 8px; right: 10px;
+      background: none; border: none; color: var(--txt3);
+      font-size: 17px; cursor: pointer; line-height: 1;
+      transition: color 0.1s;
+    }
+    .slip-item-rm:hover { color: var(--txt); }
+    .slip-item-pick {
+      font-size: 13px; font-weight: 700; color: var(--mustard);
+      margin-bottom: 2px; padding-right: 22px;
+    }
+    .slip-item-bet {
+      font-size: 11px; color: var(--txt2); margin-bottom: 7px;
+      line-height: 1.3;
+    }
+    .slip-item-odds { font-size: 13px; font-weight: 700; color: var(--txt); }
+
+    .slip-footer {
+      padding: 14px 16px; border-top: 1px solid var(--border);
+    }
+
+    .wager-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 10px;
+    }
+    .wager-lbl { font-size: 12px; color: var(--txt2); white-space: nowrap; }
+    .wager-input {
+      background: var(--bg4); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--txt); padding: 7px 10px;
+      font-size: 15px; font-weight: 700; text-align: right; width: 110px;
+    }
+    .wager-input:focus { outline: none; border-color: var(--blue); }
+
+    .slip-row {
+      display: flex; justify-content: space-between;
+      font-size: 12px; margin-bottom: 5px;
+    }
+    .slip-row-lbl { color: var(--txt2); }
+    .slip-row-val { color: var(--txt); font-weight: 600; }
+
+    .parlay-tag {
+      background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.3);
+      color: var(--mustard); border-radius: 5px; padding: 2px 7px;
+      font-size: 10px; font-weight: 700; margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .place-btn {
+      width: 100%; margin-top: 8px;
+      background: var(--mustard); border: none; color: #000;
+      padding: 13px; border-radius: 8px;
+      font-size: 14px; font-weight: 900; cursor: pointer; letter-spacing: 0.2px;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .place-btn:hover:not(:disabled) { background: var(--mustard-dk); }
+    .place-btn:active:not(:disabled) { transform: scale(0.98); }
+    .place-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── MODAL ── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.75);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--bg2); border: 1px solid var(--mustard);
+      border-radius: 16px; padding: 36px 28px; max-width: 360px; width: 90%;
+      text-align: center;
+      transform: scale(0.88); transition: transform 0.25s;
+    }
+    .overlay.show .modal { transform: scale(1); }
+    .modal-dog { font-size: 52px; margin-bottom: 10px; }
+    .modal h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+    .modal p { color: var(--txt2); font-size: 13px; line-height: 1.5; margin-bottom: 22px; }
+    .modal-close {
+      background: var(--mustard); border: none; color: #000;
+      padding: 12px 32px; border-radius: 8px;
+      font-size: 14px; font-weight: 800; cursor: pointer;
+    }
+    .modal-close:hover { background: var(--mustard-dk); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 24px;
+      font-size: 11px; color: var(--txt3); border-top: 1px solid var(--border);
+      line-height: 1.8;
+    }
+    footer em { color: var(--mustard); font-style: normal; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      .main { padding: 14px 12px 80px; }
+      .main.slip-open { margin-right: 0; }
+      .bet-grid { grid-template-columns: 1fr; }
+
+      .slip {
+        top: auto; bottom: 0; left: 0; right: 0; width: 100%;
+        height: 82vh; border-left: none; border-top: 1px solid var(--border);
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+      }
+      .slip.open { transform: translateY(0); }
+
+      .hero h1 { font-size: 18px; }
+      .hero-bg-dog { font-size: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <div class="logo-dog">🌭</div>
+    <div>
+      <div class="logo-name"><em>Glizzy</em> Gambling</div>
+      <div class="logo-sub">Official Sportsbook of the Glizzy Gang</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="live-pill"><div class="live-dot"></div>LIVE ODDS</div>
+    <button class="slip-btn" onclick="toggleSlip()">
+      Bet Slip <span class="slip-badge" id="slip-count">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- ── LAYOUT ── -->
+<div class="layout">
+  <div class="main" id="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-bg-dog">🌭</div>
+      <div class="event-badge">🗽 NYC Boys Weekend</div>
+      <h1>Glizzy Gang — NYC 2026</h1>
+      <div class="hero-meta">
+        Thu May 1 – Mon May 5
+        <span>·</span>
+        Brooklyn &amp; Beyond
+        <span>·</span>
+        3 Rounds of Golf
+      </div>
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-val">17</div>
+          <div class="hstat-lbl">Total Props</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val">3</div>
+          <div class="hstat-lbl">Degenerates</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val">∞</div>
+          <div class="hstat-lbl">Glizzies</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="filter('all',this)">All Bets</button>
+      <button class="tab" onclick="filter('golf',this)">⛳ Golf</button>
+      <button class="tab" onclick="filter('drinking',this)">🍺 Drinking</button>
+      <button class="tab" onclick="filter('sleep',this)">😴 Sleep</button>
+      <button class="tab" onclick="filter('nyc',this)">🏙️ NYC &amp; Nightlife</button>
+      <button class="tab" onclick="filter('props',this)">🎯 Personal Props</button>
+    </div>
+
+    <!-- SECTIONS -->
+    <div id="sections"></div>
+
+    <footer>
+      Glizzy Gambling is not a real sportsbook. No money will be collected, transferred, or lost.<br>
+      (Unless Brooks bets too heavy on the Derby — that's on him.)<br>
+      <em>🌭 Glizzy Gang NYC 2026 🌭</em>
+    </footer>
+
+  </div>
+
+  <!-- ── BET SLIP ── -->
+  <div class="slip" id="slip">
+    <div class="slip-hdr">
+      <span class="slip-hdr-title">🌭 Bet Slip</span>
+      <button class="slip-hdr-clear" onclick="clearAll()">Clear all</button>
+    </div>
+    <div class="slip-body" id="slip-body">
+      <div class="slip-empty">
+        <div class="slip-empty-icon">🌭</div>
+        <p>No bets yet.<br>Select your props to build a parlay.</p>
+      </div>
+    </div>
+    <div class="slip-footer">
+      <div class="wager-row">
+        <span class="wager-lbl">Wager ($)</span>
+        <input class="wager-input" type="number" id="wager" value="20" min="1" oninput="renderSlipFooter()">
+      </div>
+      <div id="parlay-tag"></div>
+      <div class="slip-row">
+        <span class="slip-row-lbl">Picks</span>
+        <span class="slip-row-val" id="s-count">0</span>
+      </div>
+      <div class="slip-row">
+        <span class="slip-row-lbl">Parlay Odds</span>
+        <span class="slip-row-val" id="s-odds">—</span>
+      </div>
+      <div class="slip-row">
+        <span class="slip-row-lbl">Est. Payout</span>
+        <span class="slip-row-val" id="s-payout">$0.00</span>
+      </div>
+      <button class="place-btn" id="place-btn" onclick="placeBet()" disabled>
+        Place Bet
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ── -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-dog">🌭</div>
+    <h2>Bet Locked In!</h2>
+    <p>Your parlay has been submitted to the Glizzy Gambling sportsbook. May the hotdog gods be with you.</p>
+    <button class="modal-close" onclick="closeModal()">Let's Ride 🎰</button>
+  </div>
+</div>
+
+<script>
+  // ── BET DATA ──────────────────────────────────────────────────────────────
+
+  const CATS = {
+    golf:     { label: 'Golf',             icon: '⛳' },
+    drinking: { label: 'Drinking Props',   icon: '🍺' },
+    sleep:    { label: 'Sleep',            icon: '😴' },
+    nyc:      { label: 'NYC & Nightlife',  icon: '🏙️' },
+    props:    { label: 'Personal Props',   icon: '🎯' },
+  };
+
+  const BETS = [
+    // GOLF
+    {
+      id: 1, cat: 'golf',
+      label: 'GOLF · SCRAMBLE',
+      title: 'Best 3 Man Scramble Score',
+      sub: 'Best score posted across all scramble rounds',
+      opts: [
+        { id:'1a', lbl:'Over 71.5',  odds:-130 },
+        { id:'1b', lbl:'Under 71.5', odds:+108 },
+      ]
+    },
+    {
+      id: 2, cat: 'golf',
+      label: 'GOLF · PUTTING',
+      title: 'Total Putts Made Over 8 Feet',
+      sub: 'Combined makes across all 3 rounds',
+      opts: [
+        { id:'2a', lbl:'Over 5.5',  odds:-115 },
+        { id:'2b', lbl:'Under 5.5', odds:-105 },
+      ]
+    },
+    {
+      id: 3, cat: 'golf',
+      label: 'GOLF · BALL TRACKING',
+      title: 'Total Lost Balls All Weekend',
+      sub: 'All players, all 3 rounds combined',
+      opts: [
+        { id:'3a', lbl:'Over 28.5',  odds:-105 },
+        { id:'3b', lbl:'Under 28.5', odds:-115 },
+      ]
+    },
+    {
+      id: 4, cat: 'golf',
+      label: 'GOLF · GLIZZY PROP',
+      title: 'Will a Glizzy Be Eaten On The Course?',
+      sub: 'At least one hotdog consumed mid-round',
+      opts: [
+        { id:'4a', lbl:'Yes',  odds:-10000 },
+        { id:'4b', lbl:'No',   odds:+2500  },
+      ]
+    },
+    {
+      id: 5, cat: 'golf',
+      label: 'GOLF · SCORING',
+      title: 'Will Anyone Make an Eagle Across All 3 Rounds?',
+      sub: '2-under on any hole, any format',
+      opts: [
+        { id:'5a', lbl:'Yes', odds:+450 },
+        { id:'5b', lbl:'No',  odds:-600 },
+      ]
+    },
+
+    // DRINKING
+    {
+      id: 6, cat: 'drinking',
+      label: 'DRINKING · BROOKS TOTAL',
+      title: "Brooks' Total Drinks All Weekend",
+      sub: 'Beer, cocktail, or shot = 1 drink',
+      opts: [
+        { id:'6a', lbl:'Over 18.5',  odds:-115 },
+        { id:'6b', lbl:'Under 18.5', odds:-105 },
+      ]
+    },
+    {
+      id: 7, cat: 'drinking',
+      label: 'DRINKING · PROP',
+      title: 'First to Say "I\'m Not Drinking That Much This Weekend"',
+      sub: 'Must be said unprompted — honor system',
+      opts: [
+        { id:'7a', lbl:'Drew',   odds:-500 },
+        { id:'7b', lbl:'Mason',  odds:+350 },
+        { id:'7c', lbl:'Brooks', odds:+900 },
+      ]
+    },
+    {
+      id: 8, cat: 'drinking',
+      label: 'DRINKING · DREW PROP',
+      title: 'Will Drew Tap Out Before 1am On Any Night?',
+      sub: 'Goes to bed or stops drinking before 1:00am',
+      opts: [
+        { id:'8a', lbl:'Yes', odds:-280 },
+        { id:'8b', lbl:'No',  odds:+210 },
+      ]
+    },
+    {
+      id: 9, cat: 'drinking',
+      label: 'DRINKING · BROOKS PROP',
+      title: 'Will Brooks Suggest "One More Bar" After 2am?',
+      sub: 'Active suggestion — not just going along with it',
+      opts: [
+        { id:'9a', lbl:'Yes', odds:-280 },
+        { id:'9b', lbl:'No',  odds:+215 },
+      ]
+    },
+
+    // SLEEP
+    {
+      id: 10, cat: 'sleep',
+      label: 'SLEEP · OVER/UNDER',
+      title: 'Average Hours of Sleep Per Night',
+      sub: 'Averaged across all 3 nights & all 3 guys',
+      opts: [
+        { id:'10a', lbl:'Over 5.5 hrs',  odds:+120 },
+        { id:'10b', lbl:'Under 5.5 hrs', odds:-145 },
+      ]
+    },
+    {
+      id: 11, cat: 'sleep',
+      label: 'SLEEP · NIGHT 1',
+      title: 'First Asleep on Night 1 (Thursday)',
+      sub: 'First one fully asleep for the night',
+      opts: [
+        { id:'11a', lbl:'Mason',  odds:-175 },
+        { id:'11b', lbl:'Drew',   odds:-175 },
+        { id:'11c', lbl:'Brooks', odds:+700 },
+      ]
+    },
+    {
+      id: 12, cat: 'sleep',
+      label: 'SLEEP · COMEDY SHOW',
+      title: 'Will Brooks Fall Asleep During the Comedy Show?',
+      sub: 'Eyes closed, head nodding — counts',
+      opts: [
+        { id:'12a', lbl:'Yes', odds:+400 },
+        { id:'12b', lbl:'No',  odds:-550 },
+      ]
+    },
+
+    // NYC & NIGHTLIFE
+    {
+      id: 13, cat: 'nyc',
+      label: 'NYC · NIGHTLIFE',
+      title: 'Will the Group Fall Asleep Before Making It to the SNL Afterparty?',
+      sub: 'All 3 in bed before the party ends',
+      opts: [
+        { id:'13a', lbl:'Yes — they tap out', odds:+130 },
+        { id:'13b', lbl:'No — they make it',  odds:-158 },
+      ]
+    },
+    {
+      id: 14, cat: 'nyc',
+      label: 'NYC · FOOD',
+      title: 'Will Pizza Be Eaten After Midnight?',
+      sub: 'Any pizza, any night, after 12:00am',
+      opts: [
+        { id:'14a', lbl:'Yes', odds:-250 },
+        { id:'14b', lbl:'No',  odds:+195 },
+      ]
+    },
+    {
+      id: 15, cat: 'nyc',
+      label: 'NYC · TRANSPORT',
+      title: 'Biggest Single Uber / Cab Fare',
+      sub: 'One ride at any point in the weekend',
+      opts: [
+        { id:'15a', lbl:'Over $45',  odds:-130 },
+        { id:'15b', lbl:'Under $45', odds:+108 },
+      ]
+    },
+    {
+      id: 16, cat: 'nyc',
+      label: 'NYC · GLIZZY PROP',
+      title: 'Street Cart Glizzy Eaten Before Saturday Night?',
+      sub: 'NYC street cart hotdog, Thursday or Friday only',
+      opts: [
+        { id:'16a', lbl:'Yes', odds:-350 },
+        { id:'16b', lbl:'No',  odds:+275 },
+      ]
+    },
+
+    // PERSONAL PROPS
+    {
+      id: 17, cat: 'props',
+      label: 'PROPS · KENTUCKY DERBY',
+      title: "How Much Will Brooks Lose Betting the Kentucky Derby?",
+      sub: 'Net losses only — wins don\'t count toward total',
+      opts: [
+        { id:'17a', lbl:'Over $55',  odds:+150 },
+        { id:'17b', lbl:'Under $55', odds:-180 },
+      ]
+    },
+    {
+      id: 18, cat: 'props',
+      label: 'PROPS · DREW EMOTIONAL',
+      title: 'Will Drew Cry If the Nuggets Lose on Thursday or Saturday?',
+      sub: 'Any visible emotional response qualifies',
+      opts: [
+        { id:'18a', lbl:'Yes 😢', odds:-400 },
+        { id:'18b', lbl:'No',     odds:+300 },
+      ]
+    },
+  ];
+
+  // ── STATE ────────────────────────────────────────────────────────────────
+
+  const selected = {}; // optId -> { bet, opt }
+  let slipOpen = false;
+  let activeFilter = 'all';
+
+  // ── RENDER BETS ──────────────────────────────────────────────────────────
+
+  function fmt(odds) { return odds > 0 ? `+${odds}` : `${odds}`; }
+  function isPos(odds) { return odds > 0; }
+
+  function renderAll() {
+    const wrap = document.getElementById('sections');
+    wrap.innerHTML = '';
+
+    const catOrder = ['golf','drinking','sleep','nyc','props'];
+    catOrder.forEach(cat => {
+      const bets = BETS.filter(b => b.cat === cat && (activeFilter === 'all' || activeFilter === cat));
+      if (!bets.length) return;
+
+      const meta = CATS[cat];
+      const sec = document.createElement('div');
+      sec.className = 'section';
+
+      sec.innerHTML = `
+        <div class="sec-hdr">
+          <span class="sec-icon">${meta.icon}</span>
+          <span class="sec-title">${meta.label}</span>
+          <span class="sec-badge">${bets.length} prop${bets.length > 1 ? 's' : ''}</span>
+        </div>
+        <div class="bet-grid" id="grid-${cat}"></div>
+      `;
+
+      wrap.appendChild(sec);
+
+      const grid = sec.querySelector(`#grid-${cat}`);
+      bets.forEach(bet => grid.appendChild(makeCard(bet)));
+    });
+  }
+
+  function makeCard(bet) {
+    const card = document.createElement('div');
+    card.className = 'bet-card';
+    card.id = `card-${bet.id}`;
+
+    const optsHtml = bet.opts.map(opt => {
+      const isSel = !!selected[opt.id];
+      const posClass = isPos(opt.odds) ? 'pos' : '';
+      const extClass = Math.abs(opt.odds) >= 1000 ? 'extreme' : '';
+      return `
+        <div class="bc-opt${isSel ? ' sel' : ''}" id="opt-${opt.id}"
+             onclick="pick(${bet.id}, '${opt.id}')">
+          <div class="bc-opt-lbl">${opt.lbl}</div>
+          <div class="bc-opt-odds ${posClass} ${extClass}">${fmt(opt.odds)}</div>
+        </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="bc-matchup">${bet.label}</div>
+      <div class="bc-title">${bet.title}</div>
+      <div class="bc-sub">${bet.sub}</div>
+      <div class="bc-opts">${optsHtml}</div>
+    `;
+
+    return card;
+  }
+
+  // ── SELECTION LOGIC ──────────────────────────────────────────────────────
+
+  function pick(betId, optId) {
+    const bet = BETS.find(b => b.id === betId);
+
+    // Deselect all options in this bet first
+    bet.opts.forEach(o => {
+      delete selected[o.id];
+      const el = document.getElementById(`opt-${o.id}`);
+      if (el) el.classList.remove('sel');
+    });
+
+    // Toggle: if we clicked the already-selected one, it's now cleared
+    const wasSelected = !document.getElementById(`opt-${optId}`).classList.contains('sel');
+
+    if (wasSelected) {
+      const opt = bet.opts.find(o => o.id === optId);
+      selected[optId] = { bet, opt };
+      document.getElementById(`opt-${optId}`).classList.add('sel');
+    }
+
+    renderSlip();
+  }
+
+  // ── BET SLIP ─────────────────────────────────────────────────────────────
+
+  function renderSlip() {
+    const picks = Object.values(selected);
+    const count = picks.length;
+
+    document.getElementById('slip-count').textContent = count;
+    document.getElementById('place-btn').disabled = count === 0;
+
+    const body = document.getElementById('slip-body');
+
+    if (count === 0) {
+      body.innerHTML = `
+        <div class="slip-empty">
+          <div class="slip-empty-icon">🌭</div>
+          <p>No bets yet.<br>Select your props to build a parlay.</p>
+        </div>`;
+    } else {
+      body.innerHTML = picks.map(({ bet, opt }) => `
+        <div class="slip-item">
+          <button class="slip-item-rm" onclick="removePick('${opt.id}')">×</button>
+          <div class="slip-item-pick">${opt.lbl}</div>
+          <div class="slip-item-bet">${bet.title}</div>
+          <div class="slip-item-odds">${fmt(opt.odds)}</div>
+        </div>`).join('');
+    }
+
+    renderSlipFooter();
+  }
+
+  function renderSlipFooter() {
+    const picks = Object.values(selected);
+    const count = picks.length;
+    const wager = parseFloat(document.getElementById('wager').value) || 0;
+
+    document.getElementById('s-count').textContent = count;
+
+    if (count === 0) {
+      document.getElementById('s-odds').textContent = '—';
+      document.getElementById('s-payout').textContent = '$0.00';
+      document.getElementById('parlay-tag').innerHTML = '';
+      return;
+    }
+
+    // Calculate parlay multiplier
+    let multi = 1;
+    picks.forEach(({ opt }) => {
+      const o = opt.odds;
+      multi *= o > 0 ? (o / 100 + 1) : (100 / Math.abs(o) + 1);
+    });
+
+    const parlayOdds = multi >= 2
+      ? `+${Math.round((multi - 1) * 100)}`
+      : `-${Math.round(100 / (multi - 1))}`;
+
+    const payout = (wager * multi).toFixed(2);
+
+    document.getElementById('s-odds').textContent = parlayOdds;
+    document.getElementById('s-payout').textContent = `$${payout}`;
+    document.getElementById('parlay-tag').innerHTML =
+      count > 1 ? `<div class="parlay-tag">${count}-Leg Parlay</div>` : '';
+  }
+
+  function removePick(optId) {
+    const entry = selected[optId];
+    if (!entry) return;
+    delete selected[optId];
+    const el = document.getElementById(`opt-${optId}`);
+    if (el) el.classList.remove('sel');
+    renderSlip();
+  }
+
+  function clearAll() {
+    Object.keys(selected).forEach(id => {
+      const el = document.getElementById(`opt-${id}`);
+      if (el) el.classList.remove('sel');
+    });
+    for (const k in selected) delete selected[k];
+    renderSlip();
+  }
+
+  // ── SLIP PANEL ────────────────────────────────────────────────────────────
+
+  function toggleSlip() {
+    slipOpen = !slipOpen;
+    document.getElementById('slip').classList.toggle('open', slipOpen);
+    document.getElementById('main').classList.toggle('slip-open', slipOpen);
+  }
+
+  // ── FILTER ───────────────────────────────────────────────────────────────
+
+  function filter(cat, el) {
+    activeFilter = cat;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderAll();
+  }
+
+  // ── PLACE BET ────────────────────────────────────────────────────────────
+
+  function placeBet() {
+    document.getElementById('overlay').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('show');
+    clearAll();
+    if (slipOpen) toggleSlip();
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────────────
+
+  renderAll();
+  renderSlip();
+</script>
+</body>
+</html>
